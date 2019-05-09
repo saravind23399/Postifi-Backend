@@ -1,0 +1,11 @@
+{
+  "name": "postifi-backend",
+  "version": "1.0.0",
+  "description": "REST API for Postifi using Node.js and Express.js with MongoDB as Datastore.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aravind S",
+  "license": "ISC"
+}
