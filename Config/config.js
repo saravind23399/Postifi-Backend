@@ -5,7 +5,8 @@ let productionConfig = {
     log:{
         errorFile: './Logs/logs.log',
         rotationPeriod: '4.5d',
-    }
+    },
+    port: process.env.PORT
 }
 
 let devConfig = {
@@ -13,7 +14,8 @@ let devConfig = {
     log:{
         errorFile: './Logs/logs.log',
         rotationPeriod: '1m',
-    }
+    },
+    port: 3000
 }
 
 module.exports = isProduction?productionConfig:devConfig
