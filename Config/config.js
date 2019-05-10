@@ -5,7 +5,7 @@ let productionConfig = {
 }
 
 let devConfig = {
-    dbUrl: ''
+    dbUrl: process.env.MONGODB_ADDON_URI
 }
 
 module.exports = isProduction?productionConfig:devConfig
