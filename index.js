@@ -7,6 +7,9 @@ const log = require('./Config/logger')
 const app = express()
 const PORT = process.env.PORT || 3000
 
+app.use(bodyparser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+
 const config = require('./Config/config')
 
 app.listen(PORT, err => {
