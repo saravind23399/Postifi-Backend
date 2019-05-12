@@ -12,6 +12,15 @@ handler.get('/ping', (req, res) => {
     })
 })
 
+/*
+    **** REQUIRED VALUES IN BODY ****
+    > idToken
+    > postTitle
+    > postContent
+    > postImageUrl
+    > postHyperLinkUrl
+*/
+
 handler.post('/newPost', (req, res) => {
     if (!req.body.idToken) {
         log.error({ request: req, info: 'Request without idToken' })
@@ -28,12 +37,12 @@ handler.post('/newPost', (req, res) => {
                     debug: config.production ? null : tokenError
                 })
             } else {
-                if (req.body.postTitle && req.body.postContent && req.body.postImageUrl && req.body.postHyperLinkUrl && req.body._id) {
+                if (req.body.postTitle && req.body.postContent && req.body.postImageUrl && req.body.postHyperLinkUrl) {
                     const newPost = new post({
                         name: verifiedToken.name,
                         email: verifiedToken.email,
                         postTitle: req.body.postTitle,
-                        postContent: req.body.postTitle,
+                        postContent: req.body.postContent,
                         postImageUrl: req.body.postImageUrl,
                         postHyperLinkUrl: req.body.postHyperLinkUrl
                     })
@@ -67,7 +76,17 @@ handler.post('/newPost', (req, res) => {
     }
 })
 
-handler.get('/editPost', (req, res) => {
+/*
+    **** REQUIRED VALUES IN BODY ****
+    > idToken
+    > _id
+    > postTitle
+    > postContent
+    > postImageUrl
+    > postHyperLinkUrl
+*/
+
+handler.post('/editPost', (req, res) => {
     if (!req.body.idToken) {
         log.error({ request: req, info: 'Request without idToken' })
         res.status(406).json({
@@ -104,7 +123,7 @@ handler.get('/editPost', (req, res) => {
                                 post.findByIdAndUpdate(req.body._id, {
                                     $set: {
                                         postTitle: req.body.postTitle,
-                                        postContent: req.body.postTitle,
+                                        postContent: req.body.postContent,
                                         postImageUrl: req.body.postImageUrl,
                                         postHyperLinkUrl: req.body.postHyperLinkUrl
                                     }
@@ -140,6 +159,12 @@ handler.get('/editPost', (req, res) => {
         })
     }
 })
+
+/*
+    **** REQUIRED VALUES IN BODY ****
+    > idToken
+    > _id
+*/
 
 handler.post('/deletePost', (req, res) => {
     if (!req.body.idToken) {
@@ -226,6 +251,10 @@ handler.get('/getAllPosts', (req, res) => {
     })
 })
 
+/*
+    **** REQUIRED VALUES IN BODY ****
+    > _id
+*/
 handler.post('/getPost', (req, res) => {
     if (req.body._id) {
         post.findById(req.body._id, (findError, findDocs) => {

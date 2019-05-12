@@ -13,6 +13,13 @@ handler.get('/ping', (req, res) => {
     })
 })
 
+/*
+    **** REQUIRED VALUES IN BODY ****
+    > idToken
+    > postId
+    > commentText
+*/
+
 handler.post('/newComment', (req, res) => {
     if (!req.body.idToken) {
         log.error({ request: req, info: 'Request without idToken' })
