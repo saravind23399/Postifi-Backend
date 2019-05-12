@@ -231,8 +231,8 @@ handler.post('/deleteComment', (req, res) => {
     }
 })
 
-handler.post('/getUserComments', (req, res) => {
-    if (req.body._id && req.body.idToken) {
+handler.post('/getPostComments', (req, res) => {
+    if (req.body.postId && req.body.idToken) {
         googleAuthLib.verifyGoogleIdToken(req, (tokenError, verifiedToken) => {
             if (tokenError) {
                 log.error({ request: req, info: 'Unable to validate token : ' + req.body.idToken })
@@ -242,9 +242,9 @@ handler.post('/getUserComments', (req, res) => {
                     debug: config.production ? null : tokenError
                 })
             } else {
-                post.find({ email: verifiedToken.email }, (findError, findDocs) => {
+                post.findById(req.body.postId , (findError, findDocs) => {
                     if (findError) {
-                        log.error({ request: req, info: 'Cannot get comments for user' })
+                        log.error({ request: req, info: 'Cannot get comments for the post' })
                         res.status(202).json({
                             success: false,
                             message: 'Error while getting Comments ',
