@@ -6,12 +6,13 @@ const CommentSchema = mongoose.Schema({
         ref: 'Post'
     },
     email: String,
+    name: String,
     commentText: String,
 }, { 
     timestamps: { 
         createdAt: 'createdAt',
         updatedAt: 'updatedAt' 
-    }
+    }}
 )
 
-export mongoose.model('Comment', CommentSchema)
+module.exports = mongoose.model('Comment', CommentSchema)
