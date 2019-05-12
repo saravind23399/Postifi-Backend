@@ -5,7 +5,7 @@ let productionConfig = {
     dbUrl: process.env.MONGODB_ADDON_URI,
     log:{
         errorFile: './Logs/logs.log',
-        rotationPeriod: '4.5d',
+        rotationPeriod: '4d',
     },
     googleOAuth:{
         clientId: '271364661089-186f38cugovk271ke8ktvqrmo49gd9ss.apps.googleusercontent.com',
