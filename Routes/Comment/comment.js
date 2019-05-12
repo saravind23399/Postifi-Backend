@@ -1,6 +1,6 @@
 const handler = require('express').Router()
-const comment = require('../Models/comment')
-const post = require('../Models/post')
+const comment = require('../Models/Comment/comment')
+const post = require('../Models/Post/post')
 
 const log = require('../Lib/logger')
 const config = require('../Lib/config')

@@ -1,5 +1,5 @@
 const handler = require('express').Router()
-const post = require('../Models/post')
+const post = require('../Models/Post/post')
 
 const log = require('../Lib/logger')
 const config = require('../Lib/config')

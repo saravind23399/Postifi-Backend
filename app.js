@@ -5,9 +5,9 @@ const cors = require('cors')
 const config = require('./Lib/config')
 const log = require('./Lib/logger')
 
-const authRoute = require('./Routes/auth')
-const postRoute = require('./Routes/post')
-const commentRoute = require('./Routes/comment')
+const authRoute = require('./Routes/Auth/auth')
+const postRoute = require('./Routes/Post/post')
+const commentRoute = require('./Routes/Comment/comment')
 
 const app = express()
 
