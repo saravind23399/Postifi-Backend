@@ -1,9 +1,9 @@
 const handler = require('express').Router()
-const post = require('../Models/Post/post')
+const post = require('../../Models/Post/post')
 
-const log = require('../Lib/logger')
-const config = require('../Lib/config')
-const googleAuthLib = require('../Lib/googleAuth')
+const log = require('../../Lib/logger')
+const config = require('../../Lib/config')
+const googleAuthLib = require('../../Lib/googleAuth')
 
 handler.get('/ping', (req, res) => {
     res.status(202).json({
@@ -33,7 +33,7 @@ handler.post('/newPost', (req, res) => {
             if (tokenError) {
                 res.status(406).json({
                     success: false,
-                    message: 'Unable to validate user. Please login again. ',
+                    message: 'Unable to validate user. Please login again.',
                     debug: config.production ? null : tokenError
                 })
             } else {
@@ -98,12 +98,12 @@ handler.post('/editPost', (req, res) => {
             if (tokenError) {
                 res.status(406).json({
                     success: false,
-                    message: 'Unable to validate user. Please login again. ',
+                    message: 'Unable to validate user. Please login again.',
                     debug: config.production ? null : tokenError
                 })
             } else {
                 if (req.body.postTitle && req.body.postContent && req.body.postImageUrl && req.body.postHyperLinkUrl && req.body._id) {
-                    post.find({ email: verifiedToken.email, _id: req.body._id }, (postFindError, postFindDocs) => {
+                    post.find({_id: req.body._id, email: verifiedToken.email }, (postFindError, postFindDocs) => {
                         if (postFindError) {
                             log.error({ request: req, info: 'Error while searching Post : ' + postFindError })
                             res.status(406).json({
@@ -116,7 +116,7 @@ handler.post('/editPost', (req, res) => {
                                 log.error({ request: req, info: 'No post find found | email : ' + req.body.email + '| _id : ' + req.body._id })
                                 res.status(406).json({
                                     success: false,
-                                    message: 'Error while searching Post ',
+                                    message: 'No Post found',
                                     debug: config.production ? null : postFindDocs
                                 })
                             } else {
@@ -130,7 +130,7 @@ handler.post('/editPost', (req, res) => {
                                 }, (updateError, updateDocs) => {
                                     if (updateError) {
                                         log.error({ request: req, info: 'Cannot update post | _id : ' + req.body._id })
-                                        res.status(202).json({
+                                        res.status(406).json({
                                             success: false,
                                             message: 'Error while updating Post ',
                                             debug: config.production ? null : updateError
@@ -139,7 +139,7 @@ handler.post('/editPost', (req, res) => {
                                         log.info({ request: req, info: 'Post Updated | _id : ' + req.body._id })
                                         res.status(202).json({
                                             success: true,
-                                            message: 'Post updated Successfully ',
+                                            message: 'Post updated Successfully',
                                             debug: config.production ? null : updateDocs
                                         })
                                     }
@@ -196,7 +196,7 @@ handler.post('/deletePost', (req, res) => {
                                 log.error({ request: req, info: 'No post find found | email : ' + verifiedToken.email + '| _id : ' + req.body._id })
                                 res.status(406).json({
                                     success: false,
-                                    message: 'Error while searching Post ',
+                                    message: 'No Post found',
                                     debug: config.production ? null : postFindDocs
                                 })
                             } else {
@@ -212,7 +212,7 @@ handler.post('/deletePost', (req, res) => {
                                         log.info({ request: req, info: 'Post Deleted | _id : ' + req.body._id })
                                         res.status(202).json({
                                             success: true,
-                                            message: 'Post deleted Successfully ',
+                                            message: 'Post deleted Successfully',
                                             debug: config.production ? null : deleteDocs
                                         })
                                     }
@@ -224,7 +224,7 @@ handler.post('/deletePost', (req, res) => {
                     log.error({ request: req, info: 'Incomplete body for deleting post' })
                     res.status(406).json({
                         success: false,
-                        message: 'Invalid/Incomplete Values for deleted the post.',
+                        message: 'Invalid/Incomplete Values for deleting the post.',
                         debug: config.production ? null : req.body
                     })
                 }

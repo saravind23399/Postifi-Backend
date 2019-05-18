@@ -1,10 +1,10 @@
 const handler = require('express').Router()
-const comment = require('../Models/Comment/comment')
-const post = require('../Models/Post/post')
+const comment = require('../../Models/Comment/comment')
+const post = require('../../Models/Post/post')
 
-const log = require('../Lib/logger')
-const config = require('../Lib/config')
-const googleAuthLib = require('../Lib/googleAuth')
+const log = require('../../Lib/logger')
+const config = require('../../Lib/config')
+const googleAuthLib = require('../../Lib/googleAuth')
 
 handler.get('/ping', (req, res) => {
     res.status(202).json({
@@ -50,7 +50,7 @@ handler.post('/newComment', (req, res) => {
                                 log.error({ request: req, info: 'Unable to add comment : No Post found for id | _id : ' + req.body.postId })
                                 res.status(406).json({
                                     success: false,
-                                    message: 'An Error occured. Try again',
+                                    message: 'No post found!',
                                     debug: config.production ? null : countError
                                 })
                             } else {
@@ -81,10 +81,10 @@ handler.post('/newComment', (req, res) => {
                         }
                     })
                 } else {
-                    log.error({ request: req, info: 'Incomplete body for new post' })
+                    log.error({ request: req, info: 'Incomplete body for new comment' })
                     res.status(406).json({
                         success: false,
-                        message: 'Invalid/Incomplete Values for adding a new post.',
+                        message: 'Invalid/Incomplete Values for adding a new comment.',
                         debug: config.production ? null : req.body
                     })
                 }
@@ -93,7 +93,13 @@ handler.post('/newComment', (req, res) => {
     }
 })
 
-handler.get('/editComment', (req, res) => {
+/*
+    **** REQUIRED VALUES IN BODY ****
+    > idToken
+    > _id
+    > commentText
+*/
+handler.post('/editComment', (req, res) => {
     if (!req.body.idToken) {
         res.status(406).json({
             success: false,
@@ -109,41 +115,33 @@ handler.get('/editComment', (req, res) => {
                     debug: config.production ? null : tokenError
                 })
             } else {
-                if (req.body.commentText && req.body.postId && req.body._id) {
-                    post.find({ _id: req.body.postId }, (postFindError, postFindDocs) => {
-                        if (postFindError) {
-                            log.error({ request: req, info: 'Error while searching Post : ' + postFindError })
+                if (req.body.commentText  && req.body._id) {
+                    comment.countDocuments({ _id: req.body._id }).exec((countError, count) => {
+                        if (countError) {
                             res.status(406).json({
                                 success: false,
-                                message: 'Error while searching Post ',
-                                debug: config.production ? null : postFindError
+                                message: 'An error occured. Try again',
+                                debug: config.production ? null : countError
                             })
                         } else {
-                            if (postFindDocs.length == 0) {
-                                log.error({ request: req, info: 'No post find found | postId : ' + req.body.postId })
+                            if (count == 0) {
                                 res.status(406).json({
                                     success: false,
-                                    message: 'Error while searching Post ',
-                                    debug: config.production ? null : postFindDocs
+                                    message: 'No comment found.',
+                                    debug: config.production ? null : req.body
                                 })
                             } else {
-                                comment.findByIdAndUpdate(req.body._id, {
-                                    $set: {
-                                        commentText: req.body.commentText
-                                    }
-                                }, (updateError, updateDocs) => {
+                                comment.findByIdAndUpdate(req.body._id, { $set: { commentText: req.body.commentText } }).exec((updateError, updateDocs) => {
                                     if (updateError) {
-                                        log.error({ request: req, info: 'Cannot update comment | _id : ' + req.body._id })
-                                        res.status(202).json({
+                                        res.status(406).json({
                                             success: false,
-                                            message: 'Error while updating Comment ',
+                                            message: 'An error occured. Try again',
                                             debug: config.production ? null : updateError
                                         })
                                     } else {
-                                        log.info({ request: req, info: 'Comment Updated | _id : ' + req.body._id })
                                         res.status(202).json({
                                             success: true,
-                                            message: 'Comment updated Successfully ',
+                                            message: 'Comment updated Successfully!',
                                             debug: config.production ? null : updateDocs
                                         })
                                     }
@@ -164,6 +162,12 @@ handler.get('/editComment', (req, res) => {
     }
 })
 
+/*
+    **** REQUIRED VALUES IN BODY ****
+    > idToken
+    > _id
+*/
+
 handler.post('/deleteComment', (req, res) => {
     if (!req.body.idToken) {
         res.status(406).json({
@@ -182,7 +186,7 @@ handler.post('/deleteComment', (req, res) => {
             } else {
                 if (req.body._id) {
                     comment.find({ email: verifiedToken.email, _id: req.body._id }, (commentFindError, commentFindDocs) => {
-                        if (postFindError) {
+                        if (commentFindError) {
                             log.error({ request: req, info: 'Error while searching Comment : ' + commentFindError })
                             res.status(406).json({
                                 success: false,
@@ -231,6 +235,7 @@ handler.post('/deleteComment', (req, res) => {
     }
 })
 
+
 handler.post('/getPostComments', (req, res) => {
     if (req.body.postId && req.body.idToken) {
         googleAuthLib.verifyGoogleIdToken(req, (tokenError, verifiedToken) => {
@@ -242,10 +247,10 @@ handler.post('/getPostComments', (req, res) => {
                     debug: config.production ? null : tokenError
                 })
             } else {
-                post.findById(req.body.postId , (findError, findDocs) => {
+                comment.find({postId: req.body.postId}, (findError, findDocs) => {
                     if (findError) {
                         log.error({ request: req, info: 'Cannot get comments for the post' })
-                        res.status(202).json({
+                        res.status(406).json({
                             success: false,
                             message: 'Error while getting Comments ',
                             debug: config.production ? null : findError
