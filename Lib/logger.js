@@ -40,7 +40,7 @@ const infoLogger = bunyan.createLogger({
     name: 'Postifi-Backend-Info',
     streams: [
         {
-            level: 'info',
+            level: config.production?'info':'fatal',
             stream: process.stdout
         }
     ]
